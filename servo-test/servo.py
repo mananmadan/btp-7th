@@ -3,7 +3,7 @@ import time
 
 class Servo:
         pin = 0
-        def __init__(self,pinnumber) -> None:
+        def __init__(self,pinnumber):
             self.pin = pinnumber
             # Set GPIO numbering mode
             GPIO.setmode(GPIO.BOARD)
