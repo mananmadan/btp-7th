@@ -10,12 +10,9 @@ class Servo:
             GPIO.setup(self.pin,GPIO.OUT)
             self.pwm = GPIO.PWM(self.pin,50) # Note 11 is pin, 50 = 50Hz pulse
 
-
-            
         def SetAngle(self,angle):
 	        duty = angle / 18 + 2
 	        GPIO.output(self.pin, True)
 	        self.pwm.ChangeDutyCycle(duty)
 	        time.sleep(1)
 	        GPIO.output(self.pin, False)
-            self.pwm.ChangeDutyCycle(0)
