@@ -1,6 +1,4 @@
 from servo import Servo
-import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BOARD)
 servo1 = Servo(11)
 servo1.SetAngle(45)
 

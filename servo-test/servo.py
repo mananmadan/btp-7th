@@ -4,6 +4,7 @@ import time
 class Servo:
  pin = 0
  def __init__(self,pinnumber):
+    GPIO.setmode(GPIO.BOARD)
     self.pin = pinnumber
     # Set GPIO numbering mode
     GPIO.setup(self.pin,GPIO.OUT)
@@ -11,6 +12,7 @@ class Servo:
 
  def SetAngle(self,angle):
     duty = angle / 18 + 2
+    print("Pin",self.pin)
     print("Duty",duty)
     self.pwm.start(0)
     self.pwm.ChangeDutyCycle(duty)
