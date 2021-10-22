@@ -1,6 +1,5 @@
 import cv2
 import sys
-import face_recognition
 
 cascPath = "haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
