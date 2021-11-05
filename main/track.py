@@ -56,6 +56,7 @@ if not args.get("video", False):
 
 # otherwise, grab a reference to the video file
 else:
+	print("in else")
 	vs = cv2.VideoCapture(args["video"])
 
 # initialize the FPS throughput estimator
