@@ -1,0 +1,5 @@
+Hack for running track.py in background
+
+- Run track.py in background
+- save the locations of the tracked object in a file
+- when the main.py will require the location (update function) just read that the latest location

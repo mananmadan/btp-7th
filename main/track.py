@@ -22,6 +22,7 @@ args = vars(ap.parse_args())
 
 # extract the OpenCV version info
 (major, minor) = cv2.__version__.split(".")[:2]
+file = open('loc','w')
 
 # if we are using OpenCV 3.2 OR BEFORE, we can use a special factory
 # function to create our object tracker
@@ -84,6 +85,11 @@ while True:
 		# check to see if the tracking was a success
 		if success:
 			(x, y, w, h) = [int(v) for v in box]
+			centre = str(x+(w/2)) + " " + str(y+(h/2))
+			file.seek(0)
+			file.write(centre)
+			file.truncate()
+			cv2.circle(frame,(x+int(w/2),y+int(h/2)),2,(0,0,255),1)
 			cv2.rectangle(frame, (x, y), (x + w, y + h),
 				(0, 255, 0), 2)
 
