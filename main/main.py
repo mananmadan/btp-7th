@@ -82,14 +82,16 @@ def set_servos(pan, tlt):
 	# loop indefinitely
 	while True:
 		# the pan and tilt angles are reversed
+		print("pan-val",pan.value)
+		print("tilt-val",tlt.value)
 		panAngle = -1 * pan.value
 		tiltAngle = -1 * tlt.value
 		# if the pan angle is within the range, pan
-		if in_range(panAngle, servoRange[0], servoRange[1]):
-			pth.pan(panAngle)
+		# if in_range(panAngle, servoRange[0], servoRange[1]):
+		pth.pan(panAngle)
 		# if the tilt angle is within the range, tilt
-		if in_range(tiltAngle, servoRange[0], servoRange[1]):
-			pth.tilt(tiltAngle)
+		# if in_range(tiltAngle, servoRange[0], servoRange[1]):
+		pth.tilt(tiltAngle)
     # check to see if this is the main body of execution
 if __name__ == "__main__":
 	# construct the argument parser and parse the arguments
@@ -142,6 +144,9 @@ if __name__ == "__main__":
 		processTilting.start()
 		print("Tilting started")
 		processSetServos.start()
+       
+		print("joining")
+		time.sleep(2)
 		# join all 4 processes
 		processObjectCenter.join()
 		processPanning.join()
