@@ -11,6 +11,9 @@ import sys
 import cv2
 # define the range for the motors
 servoRange = (-90, 90)
+cp = 0.0
+ct = 0.0
+
 
 # function to handle keyboard interrupt
 def signal_handler(sig, frame):
@@ -79,19 +82,20 @@ def in_range(val, start, end):
 def set_servos(pan, tlt):
 	# signal trap to handle keyboard interrupt
 	signal.signal(signal.SIGINT, signal_handler)
+	global cp,ct
 	# loop indefinitely
 	while True:
 		# the pan and tilt angles are reversed
 		print("pan-val",pan.value)
 		print("tilt-val",tlt.value)
-		panAngle = -1 * pan.value
-		tiltAngle = -1 * tlt.value
+		panAngle = +1 * pan.value
+		tiltAngle = +1 * tlt.value
 		# if the pan angle is within the range, pan
 		# if in_range(panAngle, servoRange[0], servoRange[1]):
-		pth.pan(panAngle)
+		cp = pth.pan(panAngle,cp)
 		# if the tilt angle is within the range, tilt
 		# if in_range(tiltAngle, servoRange[0], servoRange[1]):
-		pth.tilt(tiltAngle)
+		ct = pth.tilt(tiltAngle,cp)
     # check to see if this is the main body of execution
 if __name__ == "__main__":
 	# construct the argument parser and parse the arguments
