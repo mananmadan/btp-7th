@@ -7,8 +7,14 @@ import pantilthat as pth
 import argparse
 import signal
 import time
+import logging
 import sys
 import cv2
+from imutils.video import VideoStream
+from imutils.video import FPS
+import argparse
+import imutils
+
 # define the range for the motors
 servoRange = (-90, 90)
 cp = 0.0
@@ -25,43 +31,98 @@ def signal_handler(sig, frame):
 	# exit
 	sys.exit()
 
-def objcenter():
-    signal.signal(signal.SIGINT, signal_handler)
-    loc = update()
-    print("location of centre of object",loc)
-    return loc
 def obj_center(args, objX, objY, centerX, centerY):
 	# signal trap to handle keyboard interrupt
+	
 	signal.signal(signal.SIGINT, signal_handler)
-	# start the video stream and wait for the camera to warm up
-	###(FOR PI)vs = VideoStream(usePiCamera=True).start()
-	print("starting video stream")
+	tracker = cv2.TrackerKCF_create()
+	# initialize the bounding box coordinates of the object we are going
+	# to track
+	initBB = None
+	print("[INFO] starting video stream...")
 	vs = VideoStream(src=0).start()
 	time.sleep(2.0)
-	# initialize the object center finder
-	obj = ObjCenter(args["cascade"])
-	# loop indefinitely
+	# initialize the FPS throughput estimator
+	fps = None
+
+	# loop over frames from the video stream
 	while True:
-		# grab the frame from the threaded video stream and flip it
-		# vertically (since our camera was upside down)
 		frame = vs.read()
-		#frame = cv2.flip(frame, 0)
-		# calculate the center of the frame as this is where we will
-		# try to keep the object
+		if frame is None:
+			break
+
+		# resize the frame (so we can process it faster) and grab the
+		# frame dimensions
+		frame = imutils.resize(frame, width=500)
 		(H, W) = frame.shape[:2]
 		centerX.value = W // 2
 		centerY.value = H // 2
-		# find the object's location
-		objectLoc = obj.update(frame, (centerX.value, centerY.value))
-		((objX.value, objY.value), rect) = objectLoc
-		# extract the bounding box and draw it
-		if rect is not None:
-			(x, y, w, h) = rect
-			cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0),
-				2)
-		# display the frame to the screen
-		cv2.imshow("Pan-Tilt Face Tracking", frame)
-		cv2.waitKey(1)
+				
+		# check to see if we are currently tracking an object
+		
+		if initBB is not None:
+			# grab the new bounding box coordinates of the object
+			(success, box) = tracker.update(frame)
+			print(success)
+		
+			# check to see if the tracking was a success
+			if success:
+				# find the object's location
+				(x, y, w, h) = [int(v) for v in box]
+				(objX.value,objY.value) = (int(x + (w / 2.0)), int(y + (h / 2.0)))
+				cv2.circle(frame,(x+int(w/2),y+int(h/2)),2,(0,0,255),1)
+				cv2.rectangle(frame, (x, y), (x + w, y + h),
+					(0, 255, 0), 2)
+		'''
+			# update the FPS counter
+			#fps.update()
+			#fps.stop()
+
+			# initialize the set of information we'll be displaying on
+			# the frame
+			
+			info = [
+				("Tracker", tr),
+				("Success", "Yes" if success else "No"),
+				("FPS", "{:.2f}".format(fps.fps())),
+			]
+
+			# loop over the info tuples and draw them on our frame
+			for (i, (k, v)) in enumerate(info):
+				text = "{}: {}".format(k, v)
+				cv2.putText(frame, text, (10, H - ((i * 20) + 20)),
+					cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+			
+		'''
+
+		# show the output frame
+		#print("objX.value::::",objX.value)
+		#print(objY.value)
+		cv2.imshow("Frame", frame)
+		key = cv2.waitKey(1) & 0xFF
+
+		# if the 's' key is selected, we are going to "select" a bounding
+		# box to track
+		if key == ord("s"):
+			# select the bounding box of the object we want to track (make
+			# sure you press ENTER or SPACE after selecting the ROI)
+			initBB = cv2.selectROI("Frame", frame, fromCenter=False,
+				showCrosshair=True)
+			#print(initBB)
+			# start OpenCV object tracker using the supplied bounding box
+			# coordinates, then start the FPS throughput estimator as well
+			tracker.init(frame, initBB)
+			#fps = FPS().start()
+
+		# if the `q` key was pressed, break from the loop
+		elif key == ord("q"):
+			break
+		#print("here2")
+
+	# if we are using a webcam, release the pointer
+	#if not args.get("video", False):
+	#vs.stop()
+	cv2.destroyAllWindows()
 
 def pid_process(output, p, i, d, objCoord, centerCoord):
 	# signal trap to handle keyboard interrupt

@@ -11,11 +11,13 @@
  - if error is neg.. make servopwm less by 0.5
  - if error is pos .. make servopwm more by 0.5
 '''
-import RPi.GPIO as GPIO
+
+#import RPi.GPIO as GPIO
 import time
 
 
 def servo_enable(pin,val):
+    '''
     ## code for servo enable false or true
     # Set GPIO numbering mode
     GPIO.setmode(GPIO.BOARD)
@@ -23,12 +25,15 @@ def servo_enable(pin,val):
     # Set pin 11 as an output, and set servo1 as pin 11 as PWM
     GPIO.setup(11,GPIO.OUT)
     GPIO.setup(12,GPIO.OUT)
+    '''
     print("servo enable",pin,val)
 
 def publish(pin,val):
+    '''
     servo=GPIO.PWM(pin,50)
     servo.start(0)
     ## code for publishing max value
+    '''
     print("Publish",pin,val)
 
 def pan(arg1,cp):                                              

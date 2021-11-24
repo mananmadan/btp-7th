@@ -32,6 +32,7 @@ if int(major) == 3 and int(minor) < 3:
 # otherwise, for OpenCV 3.3 OR NEWER, we need to explicity call the
 # approrpiate object tracker constructor:
 else:
+	print("here")
 	# initialize a dictionary that maps strings to their corresponding
 	# OpenCV object tracker implementations
 	OPENCV_OBJECT_TRACKERS = {
