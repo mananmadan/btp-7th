@@ -155,7 +155,8 @@ def pid_process(output, p, i, d, objCoord, centerCoord):
 	while True:
 		# calculate the error
 		error = centerCoord.value - objCoord.value
-		# update the value
+		if error < 35 and error > -35:
+		  error = 0
 		output.value = p.update(error)
 
 def in_range(val, start, end):
@@ -203,9 +204,9 @@ if __name__ == "__main__":
 		pan = manager.Value("i", 0)
 		tlt = manager.Value("i", 0)
         # set PID values for panning
-		panP = manager.Value("f", 0.09)
-		panI = manager.Value("f", 0.08)
-		panD = manager.Value("f", 0.002)
+		panP = manager.Value("f", 2)
+		panI = manager.Value("f", 0.0)
+		panD = manager.Value("f", 0.7)
 		# set PID values for tilting
 		tiltP = manager.Value("f", 0.11)
 		tiltI = manager.Value("f", 0.10)

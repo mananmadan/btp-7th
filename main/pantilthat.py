@@ -25,14 +25,14 @@ pwm = pigpio.pi()
 
 def movehservopositiveh(servo,servoto):
     print("-->>",config.servocurh,servoto)
-    while config.servocurh<servoto and config.servocurh<2480:
+    while config.servocurh<servoto-50 and config.servocurh<2480:
         pwm.set_servo_pulsewidth( servo, config.servocurh )
         config.servocurh=config.servocurh+11
         time.sleep(0.1)
 
 def movehservonegativeh(servo,servoto):
     print("--<<",config.servocurh,servoto)
-    while config.servocurh>servoto and config.servocurh>515:
+    while config.servocurh>servoto+50 and config.servocurh>515:
         pwm.set_servo_pulsewidth( servo, config.servocurh )
         config.servocurh=config.servocurh-11
         time.sleep(0.1)
@@ -42,16 +42,16 @@ def movehservopositivev(servo,servoto):
     print("--<<",config.servocurv,servoto)
     while config.servocurv<servoto and config.servocurv <2480:
         pwm.set_servo_pulsewidth( servo, config.servocurv )
-        config.servocurv=config.servocurv+15
-        time.sleep(1)
+        config.servocurv=config.servocurv+20
+        time.sleep(0.1)
 
     
 def movehservonegativev(servo,servoto):
     print("--<<",config.servocurv,servoto)
     while config.servocurv>servoto and config.servocurv>1200:
         pwm.set_servo_pulsewidth( servo, config.servocurv )
-        config.servocurv=config.servocurv-15
-        time.sleep(1)
+        config.servocurv=config.servocurv+20
+        time.sleep(0.1)
 
 def servo_enable(pin,val):
     '''
@@ -123,5 +123,5 @@ def tilt(arg1,ct,x):
     #print("ct:",ct)
     
     #print("Toooooooop",top)
-    publish(servov,ct) ## publish val on tilt pin
+    #publish(servov,ct) ## publish val on tilt pin
     return ct
