@@ -14,13 +14,20 @@ from imutils.video import VideoStream
 from imutils.video import FPS
 import argparse
 import imutils
+import config
+
 
 # define the range for the motors
 servoRange = (-90, 90)
 cp = 0.0
 ct = 0.0
-
-
+son=False
+        
+def updateson():
+    global son
+    son = True
+def getson():
+    return son
 # function to handle keyboard interrupt
 def signal_handler(sig, frame):
 	# print a status message
@@ -33,7 +40,7 @@ def signal_handler(sig, frame):
 
 def obj_center(args, objX, objY, centerX, centerY):
 	# signal trap to handle keyboard interrupt
-	
+	#global son
 	signal.signal(signal.SIGINT, signal_handler)
 	tracker = cv2.TrackerKCF_create()
 	# initialize the bounding box coordinates of the object we are going
@@ -44,35 +51,44 @@ def obj_center(args, objX, objY, centerX, centerY):
 	time.sleep(2.0)
 	# initialize the FPS throughput estimator
 	fps = None
-
 	# loop over frames from the video stream
 	while True:
 		frame = vs.read()
 		if frame is None:
 			break
-
 		# resize the frame (so we can process it faster) and grab the
 		# frame dimensions
 		frame = imutils.resize(frame, width=500)
 		(H, W) = frame.shape[:2]
-		centerX.value = W // 2
-		centerY.value = H // 2
-				
+		
+		
 		# check to see if we are currently tracking an object
 		
 		if initBB is not None:
 			# grab the new bounding box coordinates of the object
 			(success, box) = tracker.update(frame)
-			print(success)
-		
+			#print(success)
 			# check to see if the tracking was a success
 			if success:
 				# find the object's location
+				centerX.value = W // 2
+				centerY.value = H // 2
+				config.top = True
+				
+				updateson()
+				print("temp toooop",config.top,getson())
+				
 				(x, y, w, h) = [int(v) for v in box]
 				(objX.value,objY.value) = (int(x + (w / 2.0)), int(y + (h / 2.0)))
 				cv2.circle(frame,(x+int(w/2),y+int(h/2)),2,(0,0,255),1)
 				cv2.rectangle(frame, (x, y), (x + w, y + h),
 					(0, 255, 0), 2)
+				#print(y+h/2)
+				
+				
+				
+				
+				#time.sleep( 1 )
 		'''
 			# update the FPS counter
 			#fps.update()
@@ -112,6 +128,11 @@ def obj_center(args, objX, objY, centerX, centerY):
 			# start OpenCV object tracker using the supplied bounding box
 			# coordinates, then start the FPS throughput estimator as well
 			tracker.init(frame, initBB)
+			#top=True
+			#son=True
+			
+			
+
 			#fps = FPS().start()
 
 		# if the `q` key was pressed, break from the loop
@@ -147,16 +168,19 @@ def set_servos(pan, tlt):
 	# loop indefinitely
 	while True:
 		# the pan and tilt angles are reversed
-		print("pan-val",pan.value)
-		print("tilt-val",tlt.value)
+		#print("pan-val",pan.value)
+		#print("tilt-val",tlt.value)
 		panAngle = +1 * pan.value
 		tiltAngle = +1 * tlt.value
 		# if the pan angle is within the range, pan
 		# if in_range(panAngle, servoRange[0], servoRange[1]):
-		cp = pth.pan(panAngle,cp)
+		#print("tilt",tiltAngle)
+		print("Temp tooop 2",config.top,getson())
+		cp = pth.pan(panAngle,cp,config.top)
 		# if the tilt angle is within the range, tilt
 		# if in_range(tiltAngle, servoRange[0], servoRange[1]):
-		ct = pth.tilt(tiltAngle,cp)
+		ct = pth.tilt(tiltAngle,ct,config.top)
+		
     # check to see if this is the main body of execution
 if __name__ == "__main__":
 	# construct the argument parser and parse the arguments
