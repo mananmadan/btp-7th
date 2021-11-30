@@ -24,7 +24,7 @@ pwm = pigpio.pi()
 
 
 def movehservopositiveh(servo,servoto):
-    print("-->>",config.servocurh,servoto)
+    #print("-->>",config.servocurh,servoto)
     while config.servocurh<servoto-50 and config.servocurh<2480:
         pwm.set_servo_pulsewidth( servo, config.servocurh )
         config.servocurh=config.servocurh+11
@@ -32,25 +32,25 @@ def movehservopositiveh(servo,servoto):
 
 def movehservonegativeh(servo,servoto):
     print("--<<",config.servocurh,servoto)
-    while config.servocurh>servoto+50 and config.servocurh>515:
+    if config.servocurh>530:
+        config.servocurh=config.servocurh-20
         pwm.set_servo_pulsewidth( servo, config.servocurh )
-        config.servocurh=config.servocurh-11
         time.sleep(0.1)
         
         
 def movehservopositivev(servo,servoto):
     print("--<<",config.servocurv,servoto)
-    while config.servocurv<servoto and config.servocurv <2480:
-        pwm.set_servo_pulsewidth( servo, config.servocurv )
+    if config.servocurv <1600:
         config.servocurv=config.servocurv+20
+        pwm.set_servo_pulsewidth( servo, config.servocurv )
         time.sleep(0.1)
 
     
 def movehservonegativev(servo,servoto):
-    print("--<<",config.servocurv,servoto)
-    while config.servocurv>servoto and config.servocurv>1200:
+    #print("--<<",config.servocurv,servoto)
+    while config.servocurv>servoto and config.servocurv>530:
         pwm.set_servo_pulsewidth( servo, config.servocurv )
-        config.servocurv=config.servocurv+20
+        config.servocurv=config.servocurv-20
         time.sleep(0.1)
 
 def servo_enable(pin,val):
@@ -106,8 +106,8 @@ def pan(arg1,cp,x):
         #print("Pos")
     #print("cp:",cp)
     #print(config.top)
-    #if x:
-    publish(servoh,cp) ## publish val on pan pin
+    if x:
+        publish(servoh,cp) ## publish val on pan pin
     return cp
 
 def tilt(arg1,ct,x):
@@ -123,5 +123,6 @@ def tilt(arg1,ct,x):
     #print("ct:",ct)
     
     #print("Toooooooop",top)
-    #publish(servov,ct) ## publish val on tilt pin
+    #if x:
+     #   publish(servov,ct) ## publish val on tilt pin
     return ct
